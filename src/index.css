@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Outfit', system-ui, sans-serif;
+
+  --color-deep: #42145f;
+  --color-primary: #592477;
+  --color-lavender: #9b6bc0;
+  --color-gold: #d6b36a;
+  --color-gold-soft: #e8d19a;
+  --color-beige: #f5ebdd;
+  --color-cream: #fffdf8;
+  --color-ink: #302536;
+  --color-canvas: #faf7f2;
+  --color-muted: #7a6e80;
+  --color-line: #eadfce;
+  --color-success: #2f7d57;
+  --color-danger: #b42318;
+
+  --shadow-card: 0 18px 40px -24px rgb(66 20 95 / 0.28);
+  --shadow-soft: 0 10px 30px -18px rgb(48 37 54 / 0.2);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-canvas);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root {
+    min-height: 100svh;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-gold) 55%, white);
+    color: var(--color-deep);
+  }
+}
+
+@utility koven-grid {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(214 179 106 / 0.18) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+@utility koven-panel {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgb(155 107 192 / 0.28), transparent 55%),
+    radial-gradient(900px 420px at 110% 20%, rgb(214 179 106 / 0.16), transparent 50%),
+    linear-gradient(165deg, #592477 0%, #42145f 58%, #2b0d3e 100%);
+}
