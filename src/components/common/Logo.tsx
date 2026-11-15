@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useLanguage } from '../../context/useLanguage'
 
 type LogoProps = {
   to?: string | null
@@ -8,6 +9,7 @@ type LogoProps = {
 }
 
 export function Logo({ to = '/', inverted = false, showSlogan = false, compact = false }: LogoProps) {
+  const { t } = useLanguage()
   const wordmarkClass = inverted ? 'text-cream' : 'text-deep'
   const sloganClass = inverted ? 'text-gold-soft/90' : 'text-muted'
 
@@ -27,7 +29,7 @@ export function Logo({ to = '/', inverted = false, showSlogan = false, compact =
           </span>
           {showSlogan && (
             <span className={`block text-[0.7rem] font-medium tracking-[0.22em] uppercase ${sloganClass}`}>
-              Connect • Support • Grow
+              {t('Connect • Support • Grow')}
             </span>
           )}
         </span>

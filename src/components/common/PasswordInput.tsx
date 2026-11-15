@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { Input } from './Input'
+import { useLanguage } from '../../context/useLanguage'
 
 type PasswordInputProps = {
   label: string
@@ -22,6 +23,7 @@ export function PasswordInput({
   placeholder = 'Enter your password',
 }: PasswordInputProps) {
   const [visible, setVisible] = useState(false)
+  const { t } = useLanguage()
 
   return (
     <Input
@@ -38,7 +40,7 @@ export function PasswordInput({
           type="button"
           onClick={() => setVisible((current) => !current)}
           className="rounded-lg p-1 text-muted transition hover:text-primary"
-          aria-label={visible ? 'Hide password' : 'Show password'}
+          aria-label={t(visible ? 'Hide password' : 'Show password')}
         >
           {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>

@@ -1,40 +1,39 @@
 import { MessageCircle } from 'lucide-react'
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/common/Button'
 import { PhoneInput } from '../../components/common/PhoneInput'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../../context/useAuth'
 import { DEFAULT_COUNTRY } from '../../data/countries'
 import { parseE164, toE164, validateNationalNumber } from '../../lib/phone'
 import { AuthLayout } from '../../layouts/AuthLayout'
 import { getDashboardPath } from '../../services/authService'
+import { useLanguage } from '../../context/useLanguage'
 
 const RESEND_SECONDS = 45
 
 export function VerifyOTP() {
   const navigate = useNavigate()
-  const { pending, otpChallenge, verifyOtp, resendOtp, editPendingPhone } = useAuth()
+  const { pending, otpChallenge, verifyOtp, resendOtp, editPendingPhone, isReady } = useAuth()
+  const { t } = useLanguage()
   const [digits, setDigits] = useState(['', '', '', '', '', ''])
   const [seconds, setSeconds] = useState(RESEND_SECONDS)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [editingPhone, setEditingPhone] = useState(false)
-  const [country, setCountry] = useState(DEFAULT_COUNTRY)
-  const [nationalNumber, setNationalNumber] = useState('')
+  const pendingPhone = useMemo(() => pending ? parseE164(pending.payload.phone) : null, [pending])
+  const [phoneDraft, setPhoneDraft] = useState<ReturnType<typeof parseE164> | null>(null)
+  const country = phoneDraft?.country ?? pendingPhone?.country ?? DEFAULT_COUNTRY
+  const nationalNumber = phoneDraft?.nationalNumber ?? pendingPhone?.nationalNumber ?? ''
   const inputs = useRef<Array<HTMLInputElement | null>>([])
-
-  useEffect(() => {
-    if (!pending) return
-    const parsed = parseE164(pending.payload.phone)
-    setCountry(parsed.country)
-    setNationalNumber(parsed.nationalNumber)
-  }, [pending])
 
   useEffect(() => {
     if (seconds <= 0) return
     const timer = window.setTimeout(() => setSeconds((current) => current - 1), 1000)
     return () => window.clearTimeout(timer)
   }, [seconds])
+
+  if (!isReady) return null
 
   if (!pending) {
     return <Navigate to="/register" replace />
@@ -108,16 +107,16 @@ export function VerifyOTP() {
       <section className="rounded-[2rem] border border-line bg-cream p-6 shadow-[var(--shadow-card)] sm:p-8">
         <span className="inline-flex items-center gap-2 rounded-full bg-beige px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
           <MessageCircle className="h-3.5 w-3.5" />
-          WhatsApp verification
+          {t('WhatsApp verification')}
         </span>
-        <h2 className="mt-4 font-display text-4xl text-deep">Enter your code</h2>
+        <h2 className="mt-4 font-display text-4xl text-deep">{t('Enter your code')}</h2>
         <p className="mt-3 text-sm leading-6 text-muted">
-          In production, a 6-digit code will be sent to WhatsApp at{' '}
+          {t('In production, a 6-digit code will be sent to WhatsApp at')}{' '}
           <span className="font-semibold text-ink">{pending.payload.phone}</span>.
         </p>
         <div className="mt-4 rounded-2xl border border-gold/40 bg-beige px-4 py-3 text-sm text-ink">
-          Prototype mode: no WhatsApp message was sent. Use demo code{' '}
-          <span className="font-semibold tracking-[0.18em]">{otpChallenge?.demoCode ?? '246810'}</span> to continue.
+          {t('Prototype mode: no WhatsApp message was sent. Use demo code ')}
+          <span className="font-semibold tracking-[0.18em]">{otpChallenge?.demoCode ?? '246810'}</span>{t(' to continue.')}
         </div>
         <form
           className="mt-6"
@@ -126,7 +125,7 @@ export function VerifyOTP() {
             void submitCode(digits.join(''))
           }}
         >
-          <div className="flex justify-between gap-2">
+          <div dir="ltr" className="flex justify-between gap-2">
             {digits.map((digit, index) => (
               <input
                 key={index}
@@ -142,7 +141,7 @@ export function VerifyOTP() {
               />
             ))}
           </div>
-          {error && <p className="mt-3 text-sm text-danger">{error}</p>}
+          {error && <p className="mt-3 text-sm text-danger">{t(error)}</p>}
           <Button type="submit" className="mt-6" fullWidth loading={loading}>
             Verify and continue
           </Button>
@@ -154,10 +153,10 @@ export function VerifyOTP() {
             disabled={seconds > 0}
             className="font-medium text-primary disabled:text-muted"
           >
-            {seconds > 0 ? `Resend code in 0:${String(seconds).padStart(2, '0')}` : 'Resend demo code'}
+            {seconds > 0 ? t('Resend code in 0:{seconds}', { seconds: String(seconds).padStart(2, '0') }) : t('Resend demo code')}
           </button>
           <button type="button" onClick={() => setEditingPhone((current) => !current)} className="font-medium text-deep">
-            Edit phone number
+            {t('Edit phone number')}
           </button>
         </div>
         {editingPhone && (
@@ -165,8 +164,8 @@ export function VerifyOTP() {
             <PhoneInput
               country={country}
               nationalNumber={nationalNumber}
-              onCountryChange={setCountry}
-              onNumberChange={setNationalNumber}
+              onCountryChange={(nextCountry) => setPhoneDraft({ country: nextCountry, nationalNumber })}
+              onNumberChange={(nextNumber) => setPhoneDraft({ country, nationalNumber: nextNumber })}
             />
             <Button type="submit" variant="purple" fullWidth>
               Save number

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import { AdminDashboard } from '../pages/admin/AdminDashboard'
-import { AdminPlaceholder } from '../pages/admin/AdminPlaceholder'
+import { AdminWorkspacePage } from '../pages/admin/AdminWorkspacePage'
 import { ForgotPassword } from '../pages/auth/ForgotPassword'
 import { Login } from '../pages/auth/Login'
 import { Register } from '../pages/auth/Register'
@@ -10,6 +10,8 @@ import { VerifyOTP } from '../pages/auth/VerifyOTP'
 import { ParentDashboard } from '../pages/parent/ParentDashboard'
 import { StudentDashboard } from '../pages/student/StudentDashboard'
 import { TeacherDashboard } from '../pages/teacher/TeacherDashboard'
+import { ProfilePage } from '../pages/profile/ProfilePage'
+import { RoleWorkspacePage } from '../pages/shared/RoleWorkspacePage'
 import { getDashboardPath } from '../services/authService'
 import { ProtectedRoute } from './ProtectedRoute'
 
@@ -69,10 +71,7 @@ export function AppRoutes() {
         path="/admin/teachers"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder
-              title="Teachers"
-              description="Educator profiles, verification, and availability will be managed from this page."
-            />
+            <AdminWorkspacePage section="teachers" />
           </ProtectedRoute>
         }
       />
@@ -80,7 +79,7 @@ export function AppRoutes() {
         path="/admin/students"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Students" description="Student accounts and learning packages will appear here." />
+            <AdminWorkspacePage section="students" />
           </ProtectedRoute>
         }
       />
@@ -88,7 +87,7 @@ export function AppRoutes() {
         path="/admin/parents"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Parents" description="Family accounts and linked children will be administered here." />
+            <AdminWorkspacePage section="parents" />
           </ProtectedRoute>
         }
       />
@@ -96,7 +95,7 @@ export function AppRoutes() {
         path="/admin/requests"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Requests" description="Marketplace requests will be triaged from this queue." />
+            <AdminWorkspacePage section="requests" />
           </ProtectedRoute>
         }
       />
@@ -104,7 +103,7 @@ export function AppRoutes() {
         path="/admin/packages"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Packages" description="Create and feature learning packages for families." />
+            <AdminWorkspacePage section="packages" />
           </ProtectedRoute>
         }
       />
@@ -112,7 +111,7 @@ export function AppRoutes() {
         path="/admin/subjects"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Subjects" description="The subject catalog will be curated from this screen." />
+            <AdminWorkspacePage section="subjects" />
           </ProtectedRoute>
         }
       />
@@ -120,7 +119,7 @@ export function AppRoutes() {
         path="/admin/bookings"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Bookings" description="Confirmed sessions and conflicts will live here." />
+            <AdminWorkspacePage section="bookings" />
           </ProtectedRoute>
         }
       />
@@ -128,7 +127,7 @@ export function AppRoutes() {
         path="/admin/schedules"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Schedules" description="Platform-wide scheduling tools will be added next." />
+            <AdminWorkspacePage section="schedules" />
           </ProtectedRoute>
         }
       />
@@ -136,7 +135,7 @@ export function AppRoutes() {
         path="/admin/reports"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Reports" description="Marketplace health and founder reports will be generated here." />
+            <AdminWorkspacePage section="reports" />
           </ProtectedRoute>
         }
       />
@@ -144,7 +143,15 @@ export function AppRoutes() {
         path="/admin/settings"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholder title="Settings" description="Shared admin settings for the three founders." />
+            <AdminWorkspacePage section="settings" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/profile"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <ProfilePage />
           </ProtectedRoute>
         }
       />
@@ -157,6 +164,9 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/teacher/requests" element={<ProtectedRoute roles={['teacher']}><RoleWorkspacePage role="teacher" section="requests" /></ProtectedRoute>} />
+      <Route path="/teacher/schedule" element={<ProtectedRoute roles={['teacher']}><RoleWorkspacePage role="teacher" section="schedule" /></ProtectedRoute>} />
+      <Route path="/teacher/profile" element={<ProtectedRoute roles={['teacher']}><ProfilePage /></ProtectedRoute>} />
       <Route
         path="/student"
         element={
@@ -165,6 +175,10 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/student/requests" element={<ProtectedRoute roles={['student']}><RoleWorkspacePage role="student" section="requests" /></ProtectedRoute>} />
+      <Route path="/student/teachers" element={<ProtectedRoute roles={['student']}><RoleWorkspacePage role="student" section="teachers" /></ProtectedRoute>} />
+      <Route path="/student/schedule" element={<ProtectedRoute roles={['student']}><RoleWorkspacePage role="student" section="schedule" /></ProtectedRoute>} />
+      <Route path="/student/profile" element={<ProtectedRoute roles={['student']}><ProfilePage /></ProtectedRoute>} />
       <Route
         path="/parent"
         element={
@@ -173,6 +187,10 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/parent/children" element={<ProtectedRoute roles={['parent']}><RoleWorkspacePage role="parent" section="children" /></ProtectedRoute>} />
+      <Route path="/parent/requests" element={<ProtectedRoute roles={['parent']}><RoleWorkspacePage role="parent" section="requests" /></ProtectedRoute>} />
+      <Route path="/parent/schedule" element={<ProtectedRoute roles={['parent']}><RoleWorkspacePage role="parent" section="schedule" /></ProtectedRoute>} />
+      <Route path="/parent/profile" element={<ProtectedRoute roles={['parent']}><ProfilePage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

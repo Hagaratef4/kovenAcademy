@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { COUNTRIES, type Country } from '../../data/countries'
 import { digitsOnly } from '../../lib/phone'
+import { useLanguage } from '../../context/useLanguage'
 
 type PhoneInputProps = {
   country: Country
@@ -18,6 +19,7 @@ export function PhoneInput({
   onNumberChange,
   error,
 }: PhoneInputProps) {
+  const { t } = useLanguage()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
 
@@ -34,25 +36,25 @@ export function PhoneInput({
 
   return (
     <div className="space-y-1.5">
-      <span className="text-sm font-medium text-ink">Phone number</span>
+      <span className="text-sm font-medium text-ink">{t('Phone number')}</span>
       <div className={`flex rounded-2xl border bg-cream ${error ? 'border-danger' : 'border-line'}`}>
         <div className="relative">
           <button
             type="button"
             onClick={() => setOpen((current) => !current)}
             className="flex h-full min-w-[7.5rem] items-center gap-2 rounded-l-2xl border-r border-line px-3 text-sm font-medium text-ink transition hover:bg-beige"
-            aria-label="Select country code"
+            aria-label={t('Select country code')}
           >
             <span aria-hidden="true">{country.flag}</span>
-            <span>{country.dialCode}</span>
+            <span dir="ltr">{country.dialCode}</span>
             <ChevronDown className="h-4 w-4 text-muted" />
           </button>
           {open && (
-            <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-72 overflow-hidden rounded-2xl border border-line bg-cream shadow-[var(--shadow-card)]">
+            <div className="absolute start-0 top-[calc(100%+8px)] z-20 w-72 overflow-hidden rounded-2xl border border-line bg-cream shadow-[var(--shadow-card)]">
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search country"
+                placeholder={t('Search country')}
                 className="w-full border-b border-line bg-transparent px-3 py-2.5 text-sm outline-none"
               />
               <ul className="max-h-56 overflow-y-auto py-1">
@@ -68,9 +70,9 @@ export function PhoneInput({
                       className="flex w-full items-center justify-between px-3 py-2 text-sm hover:bg-beige"
                     >
                       <span>
-                        {item.flag} {item.name}
+                        {item.flag} {t(item.name)}
                       </span>
-                      <span className="text-muted">{item.dialCode}</span>
+                      <span dir="ltr" className="text-muted">{item.dialCode}</span>
                     </button>
                   </li>
                 ))}
@@ -80,16 +82,17 @@ export function PhoneInput({
         </div>
         <input
           type="tel"
+          dir="ltr"
           inputMode="numeric"
           autoComplete="tel-national"
           value={nationalNumber}
           maxLength={country.maxLength}
-          placeholder={country.iso === 'KW' ? '5XXXXXXX' : 'National number'}
+          placeholder={country.iso === 'KW' ? '5XXXXXXX' : t('National number')}
           onChange={(event) => onNumberChange(digitsOnly(event.target.value))}
           className="w-full rounded-r-2xl bg-transparent px-4 py-3 text-sm outline-none"
         />
       </div>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="text-xs text-danger">{t(error)}</p>}
     </div>
   )
 }

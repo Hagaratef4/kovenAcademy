@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -19,24 +17,11 @@ import {
   resendPendingOtp,
   startRegistration,
   updatePendingPhone,
+  updateMockProfile,
 } from '../services/authService'
-import type { OtpChallenge } from '../services/otpService'
 import type { PendingVerification, RegisterPayload, User } from '../types/auth'
-
-type AuthContextValue = {
-  user: User | null
-  isReady: boolean
-  pending: PendingVerification | null
-  otpChallenge: OtpChallenge | null
-  login: (phone: string, password: string, remember: boolean) => Promise<User>
-  logout: () => void
-  register: (payload: RegisterPayload) => Promise<void>
-  verifyOtp: (code: string) => Promise<User>
-  resendOtp: () => Promise<void>
-  editPendingPhone: (phone: string) => Promise<void>
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+import type { OtpChallenge } from '../services/otpService'
+import { AuthContext } from './authContextStore'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -100,6 +85,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setOtpChallenge(result.challenge)
   }, [])
 
+  const updateProfile = useCallback(async (fields: Pick<User, 'fullName' | 'city'>) => {
+    if (!user) throw new Error('Please sign in again before editing your profile.')
+    const nextUser = await updateMockProfile(user.id, fields)
+    const remember = localStorage.getItem('koven.session') !== null
+    persistSession(nextUser, remember)
+    setUser(nextUser)
+    return nextUser
+  }, [user])
+
   const value = useMemo(
     () => ({
       user,
@@ -112,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       verifyOtp,
       resendOtp,
       editPendingPhone,
+      updateProfile,
     }),
     [
       user,
@@ -124,16 +119,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       verifyOtp,
       resendOtp,
       editPendingPhone,
+      updateProfile,
     ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider')
-  }
-  return context
 }

@@ -36,6 +36,14 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  html[lang='ar'] body {
+    font-family: 'Outfit', 'Noto Sans Arabic', Tahoma, Arial, sans-serif;
+  }
+
+  html[lang='ar'] .font-display {
+    font-family: 'Noto Naskh Arabic', 'Traditional Arabic', Tahoma, serif;
+  }
+
   #root {
     min-height: 100svh;
   }

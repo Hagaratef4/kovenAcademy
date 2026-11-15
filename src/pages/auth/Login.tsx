@@ -3,15 +3,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/common/Button'
 import { PasswordInput } from '../../components/common/PasswordInput'
 import { PhoneInput } from '../../components/common/PhoneInput'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../../context/useAuth'
 import { DEFAULT_COUNTRY, type Country } from '../../data/countries'
 import { AuthLayout } from '../../layouts/AuthLayout'
 import { toE164, validateNationalNumber } from '../../lib/phone'
 import { getDashboardPath } from '../../services/authService'
+import { useLanguage } from '../../context/useLanguage'
 
 export function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
+  const { t } = useLanguage()
   const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY)
   const [nationalNumber, setNationalNumber] = useState('')
   const [password, setPassword] = useState('')
@@ -48,8 +50,8 @@ export function Login() {
       subtitle="Pick up where you left off. Your teachers, learners, and next milestones are just around the corner."
     >
       <div>
-        <h2 className="font-display text-[2.35rem] leading-none text-deep">Welcome back</h2>
-        <p className="mt-2 text-sm leading-6 text-muted">Sign in with the phone number connected to your Koven account.</p>
+        <h2 className="font-display text-[2.35rem] leading-none text-deep">{t('Welcome back')}</h2>
+        <p className="mt-2 text-sm leading-6 text-muted">{t('Sign in with the phone number connected to your Koven account.')}</p>
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <PhoneInput
             country={country}
@@ -62,21 +64,21 @@ export function Login() {
           <div className="flex items-center justify-between gap-3 text-xs">
             <label className="flex items-center gap-2 text-muted">
               <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} className="h-4 w-4 rounded border-line accent-gold" />
-              Remember me
+              {t('Remember me')}
             </label>
-            <Link to="/forgot-password" className="font-medium text-primary transition hover:text-deep">Forgot password?</Link>
+            <Link to="/forgot-password" className="font-medium text-primary transition hover:text-deep">{t('Forgot password?')}</Link>
           </div>
-          {submitError && <p className="text-sm text-danger">{submitError}</p>}
+          {submitError && <p className="text-sm text-danger">{t(submitError)}</p>}
           <Button type="submit" fullWidth loading={loading} className="mt-1">
             Continue
           </Button>
         </form>
         <p className="mt-5 text-center text-sm text-muted">
-          New to Koven?{' '}
-          <Link to="/register" className="font-semibold text-primary transition hover:text-deep">Create an account</Link>
+          {t('New to Koven?')}{' '}
+          <Link to="/register" className="font-semibold text-primary transition hover:text-deep">{t('Create an account')}</Link>
         </p>
         <p className="mt-5 border-t border-line pt-4 text-center text-[11px] leading-5 text-muted">
-          By continuing, you agree to Koven’s <span className="font-medium text-deep">Terms</span> and <span className="font-medium text-deep">Privacy Policy</span>.
+          {t('By continuing, you agree to Koven’s ')}<span className="font-medium text-deep">{t('Terms')}</span>{t(' and ')}<span className="font-medium text-deep">{t('Privacy Policy')}</span>.
         </p>
       </div>
     </AuthLayout>

@@ -102,6 +102,22 @@ export async function loginWithPhone(phone: string, password: string) {
   return toPublicUser(user)
 }
 
+export async function updateMockProfile(userId: string, fields: Pick<User, 'fullName' | 'city'>) {
+  const fullName = fields.fullName.trim()
+  const city = fields.city.trim()
+  if (fullName.length < 2) throw new Error('Enter a full name with at least 2 characters.')
+  if (!city) throw new Error('Enter your city.')
+
+  const users = readUsers()
+  const userIndex = users.findIndex((entry) => entry.id === userId)
+  if (userIndex === -1) throw new Error('This demo profile is no longer available in this browser.')
+
+  const updatedUser: StoredUser = { ...users[userIndex], fullName, city }
+  users[userIndex] = updatedUser
+  writeUsers(users)
+  return toPublicUser(updatedUser)
+}
+
 function savePending(pending: PendingVerification, challenge: OtpChallenge) {
   sessionStorage.setItem(PENDING_KEY, JSON.stringify(pending))
   sessionStorage.setItem(OTP_KEY, JSON.stringify(challenge))

@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { LoaderCircle } from 'lucide-react'
+import { useLanguage } from '../../context/useLanguage'
 
 type ButtonVariant = 'gold' | 'purple' | 'ghost' | 'outline'
 
@@ -30,6 +31,7 @@ export function Button({
   type = 'button',
   ...props
 }: ButtonProps) {
+  const { t } = useLanguage()
   return (
     <button
       type={type}
@@ -38,7 +40,7 @@ export function Button({
       {...props}
     >
       {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : icon}
-      {children}
+      {typeof children === 'string' ? t(children) : children}
     </button>
   )
 }

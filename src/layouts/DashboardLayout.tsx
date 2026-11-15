@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Navbar } from '../components/common/Navbar'
 import { Sidebar } from '../components/common/Sidebar'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 type DashboardLayoutProps = {
   children: ReactNode

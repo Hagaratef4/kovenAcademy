@@ -5,10 +5,11 @@ import { Button } from '../../components/common/Button'
 import { Input } from '../../components/common/Input'
 import { PasswordInput } from '../../components/common/PasswordInput'
 import { PhoneInput } from '../../components/common/PhoneInput'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../../context/useAuth'
 import { DEFAULT_COUNTRY, type Country } from '../../data/countries'
 import { toE164, validateNationalNumber } from '../../lib/phone'
 import { AuthLayout } from '../../layouts/AuthLayout'
+import { useLanguage } from '../../context/useLanguage'
 import type { PublicRole } from '../../types/auth'
 
 const roles: Array<{
@@ -54,6 +55,7 @@ const emptyForm: FormState = {
 export function Register() {
   const navigate = useNavigate()
   const { register } = useAuth()
+  const { t } = useLanguage()
   const [step, setStep] = useState<'role' | 'form'>('role')
   const [role, setRole] = useState<PublicRole | null>(null)
   const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY)
@@ -113,8 +115,8 @@ export function Register() {
     >
       {step === 'role' ? (
         <div>
-          <h2 className="font-display text-[2.2rem] leading-none text-deep">Create your account</h2>
-          <p className="mt-2 text-sm leading-6 text-muted">First, tell us how you’d like to be part of Koven.</p>
+          <h2 className="font-display text-[2.2rem] leading-none text-deep">{t('Create your account')}</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">{t('First, tell us how you’d like to be part of Koven.')}</p>
           <div className="mt-5 grid gap-2.5">
             {roles.map((item) => {
               const Icon = item.icon
@@ -125,7 +127,7 @@ export function Register() {
                   type="button"
                   onClick={() => setRole(item.id)}
                   aria-pressed={selected}
-                  className={`rounded-3xl border p-5 text-left transition ${
+                  className={`rounded-3xl border p-5 text-start transition ${
                     selected
                       ? 'border-gold bg-beige/80 shadow-[var(--shadow-soft)] ring-2 ring-gold/20'
                       : 'border-line bg-white/60 hover:-translate-y-0.5 hover:border-lavender/60 hover:bg-white'
@@ -138,8 +140,8 @@ export function Register() {
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block font-semibold text-deep">{item.title.replace('Join as a ', '')}</span>
-                      <span className="mt-0.5 block text-xs leading-5 text-muted">{item.description}</span>
+                      <span className="block font-semibold text-deep">{t(item.title)}</span>
+                      <span className="mt-0.5 block text-xs leading-5 text-muted">{t(item.description)}</span>
                     </span>
                     <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border ${selected ? 'border-deep bg-deep text-gold' : 'border-line bg-cream'}`}>
                       {selected && <span className="h-1.5 w-1.5 rounded-full bg-gold" />}
@@ -149,14 +151,14 @@ export function Register() {
               )
             })}
           </div>
-          {errors.role && <p className="mt-3 text-sm text-danger">{errors.role}</p>}
+          {errors.role && <p className="mt-3 text-sm text-danger">{t(errors.role)}</p>}
           <Button className="mt-4" fullWidth onClick={continueWithRole}>
             Continue
           </Button>
           <p className="mt-4 text-center text-sm text-muted">
-            Already have an account?{' '}
+            {t('Already have an account?')}{' '}
             <Link to="/login" className="font-semibold text-primary hover:text-deep">
-              Log in
+              {t('Log in')}
             </Link>
           </p>
         </div>
@@ -167,12 +169,11 @@ export function Register() {
             onClick={() => setStep('role')}
             className="text-sm font-medium text-primary hover:text-deep"
           >
-            ← Change role
+            <span className="inline-block rtl:rotate-180">←</span> {t('Change role')}
           </button>
-          <h2 className="mt-3 font-display text-[2.2rem] leading-none text-deep">Your details</h2>
+          <h2 className="mt-3 font-display text-[2.2rem] leading-none text-deep">{t('Your details')}</h2>
           <p className="mt-2 text-sm leading-6 text-muted">
-            Joining as a <span className="font-semibold capitalize text-primary">{role}</span>. We’ll verify your
-            WhatsApp number next.
+            {t('Joining as {role}. We’ll verify your WhatsApp number next.', { role: role ? t(role) : '' })}
           </p>
           <form className="mt-5 space-y-3.5" onSubmit={handleSubmit}>
             <Input
@@ -215,7 +216,7 @@ export function Register() {
               placeholder="Re-enter your password"
               onChange={(value) => setForm((current) => ({ ...current, confirmPassword: value }))}
             />
-            {submitError && <p className="text-sm text-danger">{submitError}</p>}
+            {submitError && <p className="text-sm text-danger">{t(submitError)}</p>}
             <Button type="submit" fullWidth loading={loading}>
               Continue to WhatsApp verification
             </Button>
